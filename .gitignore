@@ -22,3 +22,6 @@ frontend/.vite/
 *.swo
 .idea/
 .vscode/
+
+# Documentation locale (pas sur GitHub)
+docs-local/
