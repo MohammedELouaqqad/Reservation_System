@@ -25,8 +25,6 @@ export interface Ressource {
 export interface Reservation {
   id: number;
   quantity: number;
-  startDateTime?: string;
-  endDateTime?: string;
   user: { id: number; name?: string; email?: string };
   ressource: { id: number; name?: string };
 }
@@ -163,8 +161,6 @@ export const api = {
   },
   createReservation(body: {
     quantity: number;
-    startDateTime: string;
-    endDateTime: string;
     ressource: { id: number };
   }) {
     return request<Reservation>("/api/reservations", {

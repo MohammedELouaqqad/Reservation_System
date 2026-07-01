@@ -18,7 +18,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { api, ApiError, type Reservation } from "@/lib/api";
-import { formatDateTime } from "@/lib/dates";
 import { useAuth } from "@/hooks/use-auth";
 import { EmptyState, ErrorState, SkeletonGrid } from "./resources.index";
 
@@ -112,9 +111,6 @@ function ReservationsList() {
                   </div>
                   <div>
                     <div className="font-medium">{ressourceName(r.ressource?.id)}</div>
-                    <div className="mt-1 text-sm text-muted-foreground">
-                      {formatDateTime(r.startDateTime)} → {formatDateTime(r.endDateTime)}
-                    </div>
                     <div className="mt-1 text-sm text-muted-foreground">
                       Quantité : <span className="font-medium text-foreground">{r.quantity}</span>
                       {isAdmin && (

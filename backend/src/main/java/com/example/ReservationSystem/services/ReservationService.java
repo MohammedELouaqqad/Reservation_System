@@ -12,7 +12,6 @@ import com.example.ReservationSystem.models.User;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,11 +32,11 @@ public class ReservationService {
 
     public List<Reservation> getAllReservations(String userEmail, boolean isAdmin) {
         if (isAdmin) {
-            return reservationRepository.findAllByOrderByStartDateTimeDesc();
+            return reservationRepository.findAll();
         }
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ReservationNotFoundException("User not found"));
-        return reservationRepository.findByUser_IdOrderByStartDateTimeDesc(user.getId());
+        return reservationRepository.findByUser_Id(user.getId());
     }
 
     @Transactional
@@ -49,20 +48,6 @@ public class ReservationService {
         if (reservation.getRessource() == null) {
             throw new NullPointerException("Ressource is Null");
         }
-
-        LocalDateTime start = reservation.getStartDateTime() != null
-                ? reservation.getStartDateTime()
-                : LocalDateTime.now();
-        LocalDateTime end = reservation.getEndDateTime() != null
-                ? reservation.getEndDateTime()
-                : start.plusHours(1);
-
-        if (!end.isAfter(start)) {
-            throw new RuntimeException("La date de fin doit être après la date de début");
-        }
-
-        reservation.setStartDateTime(start);
-        reservation.setEndDateTime(end);
 
         Ressource ressource = ressourceRepository.findByIdWithLock(
                 reservation.getRessource().getId()

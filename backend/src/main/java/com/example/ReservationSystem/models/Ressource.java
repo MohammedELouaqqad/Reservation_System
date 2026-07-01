@@ -16,6 +16,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(schema = "public")
 public class Ressource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

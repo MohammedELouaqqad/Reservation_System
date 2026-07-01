@@ -3,14 +3,13 @@ package com.example.ReservationSystem.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(schema = "public")
 public class Reservation {
 
     @Id
@@ -18,10 +17,6 @@ public class Reservation {
     private Long id;
 
     private Integer quantity;
-
-    private LocalDateTime startDateTime;
-
-    private LocalDateTime endDateTime;
 
     @ManyToOne
     private User user;

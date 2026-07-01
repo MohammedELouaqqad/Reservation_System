@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarCheck2, Clock3, Package, Plus } from "lucide-react";
+import { CalendarCheck2, Package, Plus, Shield } from "lucide-react";
 import { Protected } from "@/components/Protected";
 import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/api";
-import { formatDateTime } from "@/lib/dates";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/dashboard")({
@@ -27,11 +26,7 @@ function Dashboard() {
   const availableCount =
     ressources.data?.filter((r) => r.status === "FREE" && r.availableQuantity > 0).length ?? 0;
   const myReservations = reservations.data?.length ?? 0;
-  const upcomingCount =
-    reservations.data?.filter((r) => {
-      if (!r.startDateTime) return false;
-      return new Date(r.startDateTime).getTime() >= Date.now();
-    }).length ?? 0;
+  const roleLabel = user?.role === "ADMIN" ? "Administrateur" : "Utilisateur";
 
   const recentReservations = (reservations.data ?? []).slice(0, 3);
 
@@ -65,9 +60,9 @@ function Dashboard() {
           value={reservations.isLoading ? "…" : String(myReservations)}
         />
         <StatCard
-          icon={<Clock3 className="h-5 w-5" />}
-          label="À venir"
-          value={reservations.isLoading ? "…" : String(upcomingCount)}
+          icon={<Shield className="h-5 w-5" />}
+          label="Rôle"
+          value={roleLabel}
         />
       </div>
 
@@ -113,10 +108,6 @@ function Dashboard() {
                   <div>
                     <div className="font-medium">
                       {reservation.ressource?.name ?? `Ressource #${reservation.ressource?.id}`}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {formatDateTime(reservation.startDateTime)} →{" "}
-                      {formatDateTime(reservation.endDateTime)}
                     </div>
                   </div>
                   <div className="text-sm text-muted-foreground">

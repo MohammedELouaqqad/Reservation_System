@@ -17,10 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api, ApiError } from "@/lib/api";
-import {
-  defaultReservationEnd,
-  defaultReservationStart,
-} from "@/lib/dates";
 import { canReserveRessource, sortRessources } from "@/lib/resources";
 
 const searchSchema = z.object({
@@ -53,17 +49,11 @@ function NewReservationPage() {
     search.ressourceId ? String(search.ressourceId) : ""
   );
   const [quantity, setQuantity] = useState<number>(1);
-  const [startDateTime, setStartDateTime] = useState(defaultReservationStart);
-  const [endDateTime, setEndDateTime] = useState(() =>
-    defaultReservationEnd(defaultReservationStart())
-  );
 
   const create = useMutation({
     mutationFn: () =>
       api.createReservation({
         quantity,
-        startDateTime,
-        endDateTime,
         ressource: { id: Number(ressourceId) },
       }),
     onSuccess: () => {
@@ -80,10 +70,6 @@ function NewReservationPage() {
     e.preventDefault();
     if (!ressourceId) return toast.error("Sélectionnez une ressource");
     if (!quantity || quantity <= 0) return toast.error("La quantité doit être supérieure à 0");
-    if (!startDateTime || !endDateTime) return toast.error("Renseignez les dates");
-    if (new Date(endDateTime) <= new Date(startDateTime)) {
-      return toast.error("La date de fin doit être après la date de début");
-    }
     create.mutate();
   };
 
@@ -91,7 +77,7 @@ function NewReservationPage() {
     <>
       <PageHeader
         title="Nouvelle réservation"
-        description="Choisissez une ressource, une période et la quantité souhaitée"
+        description="Choisissez une ressource et la quantité souhaitée"
       />
       <Card className="max-w-xl">
         <CardContent className="p-6">
@@ -118,32 +104,6 @@ function NewReservationPage() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="start">Début</Label>
-                <Input
-                  id="start"
-                  type="datetime-local"
-                  value={startDateTime}
-                  onChange={(e) => {
-                    setStartDateTime(e.target.value);
-                    setEndDateTime(defaultReservationEnd(e.target.value));
-                  }}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="end">Fin</Label>
-                <Input
-                  id="end"
-                  type="datetime-local"
-                  value={endDateTime}
-                  min={startDateTime}
-                  onChange={(e) => setEndDateTime(e.target.value)}
-                  required
-                />
-              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="qty">Quantité</Label>
