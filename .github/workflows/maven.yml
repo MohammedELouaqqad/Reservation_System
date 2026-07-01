@@ -18,6 +18,24 @@ jobs:
   backend:
 
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ReservationSystemDB
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ReservationSystemDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     defaults:
       run:
         working-directory: backend
@@ -28,8 +46,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: backend/pom.xml
     - name: Build with Maven
-      run: mvn -B clean package
+      run: ./mvnw -B clean package
 
       
   frontend:
@@ -44,6 +63,8 @@ jobs:
       with:
         node-version: '22'
         cache: npm
-        cache-dependency-path: package-lock.json
+        cache-dependency-path: frontend/package-lock.json
     - run: npm ci
     - run: npm run build
+      env:
+        VITE_API_URL: http://localhost:8080
